@@ -38,3 +38,27 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+model User {
+id        Int      @id @default(autoincrement())
+email     String   @unique
+name      String
+profile   Profile?
+}
+
+model Profile {
+id               Int      @id @default(autoincrement())
+first_name       String
+last_name        String
+city             String
+user             User     @relation(fields: [userId], references: [id])
+userId           Int      @unique
+posts            Post[]
+}
+
+model Post {
+id               Int      @id @default(autoincrement())
+title            String
+description      String
+profile          Profile  @relation(fields: [profileId], references: [id])
+profileId        Int
+}

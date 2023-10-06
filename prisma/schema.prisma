@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+    id                 BigInt      @id @default(autoincrement())
+    firstName          String
+    lastName           String
+    email              String      @unique
+    mobile             String
+    password           String
+    otp                String
+    created_at         DateTime
+    updated_at         DateTime
+    customer           Customers?
+    invoices           Invoices[]
+    categories         Categories[]
+    products           Products[]
+    invoice_products   Invoice_Products[]
+}
+
+model Customers {
+    id              BigInt      @id @default(autoincrement())
+    name            String
+    email           String      @unique
+    mobile          String
+    user            Users       @relation(fields: [user_id], references: [id])
+    user_id         BigInt      @unique
+    created_at      DateTime
+    updated_at      DateTime
+    invoices        Invoices[]
+}
+
+model Invoices {
+    id              BigInt      @id @default(autoincrement())
+    total           String      
+    discount        String      
+    vat             String      
+    payable         String      
+    user            Users       @relation(fields: [user_id], references: [id])
+    user_id         BigInt      @unique
+    customer        Customers   @relation(fields: [customer_id], references: [id])
+    customer_id     BigInt      @unique
+    created_at      DateTime
+    updated_at      DateTime
+    invoice_products   Invoice_Products[]
+}
+
+model Categories {
+    id              BigInt      @id @default(autoincrement())
+    name            String
+    user            Users       @relation(fields: [user_id], references: [id])
+    user_id         BigInt      @unique
+    created_at      DateTime
+    updated_at      DateTime
+    products        Products[]
+}
+
+model Products {
+    id                  BigInt      @id @default(autoincrement())
+    user                Users       @relation(fields: [user_id], references: [id])
+    user_id             BigInt      @unique
+    category            Categories  @relation(fields: [category_id], references: [id])
+    category_id         BigInt      @unique
+    name                String
+    price               String      
+    unit                String
+    img_url             String
+    created_at          DateTime
+    updated_at          DateTime
+    invoice_products    Invoice_Products[]
+}
+
+model Invoice_Products {
+    id              BigInt      @id @default(autoincrement())
+    invoice         Invoices    @relation(fields: [invoice_id], references: [id])
+    invoice_id      BigInt      @unique
+    product         Products    @relation(fields: [product_id], references: [id])
+    product_id      BigInt      @unique
+    user            Users       @relation(fields: [user_id], references: [id])
+    user_id         BigInt      @unique
+    qty             String      
+    sale_price      String      
+    created_at      DateTime
+    updated_at      DateTime
+}
